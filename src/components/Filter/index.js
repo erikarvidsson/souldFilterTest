@@ -1,50 +1,50 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
+const ListItems = styled.div`
+  .filter {
+    display: flex;
+
+    h4:nth-child(1) {
+      border: 0px solid #114;
+    }
+    h4 {
+      border: 1px solid #119;
+      border-radius: 20px;
+
+      &.active {
+        border: 2px solid #114;
+      }
+    }
+  }
+  .listHeader {
+    display: flex;
+
+    h4 {
+      border: 1px solid #000;
+    }
+  }
+  h4 {
+    width: 15%;
+    padding-left: 10px;
+  }
+  ul {
+    list-style-type: none;
+    padding-inline-start: 0;
+  }
+  li {
+    display: flex;
+  }
+`;
+
 const Filter = () => {
   const [data, setData] = useState();
   const [filteredData, setFilteredData] = useState();
   const [tags, setTags] = useState();
-  // const [status, setStatus] = useState();
+  const [test, setTest] = useState();
   const [sortedBy, setSortedBy] = useState();
   const [order, setOrder] = useState("asc");
   const dataUrl = "https://api.dev.sould.se/";
-
-  const ListItems = styled.div`
-    .filter {
-      display: flex;
-
-      h4:nth-child(1) {
-        border: 0px solid #114;
-      }
-      h4 {
-        border: 1px solid #119;
-        border-radius: 20px;
-
-        &.active {
-          border: 2px solid #114;
-        }
-      }
-    }
-    .listHeader {
-      display: flex;
-
-      h4 {
-        border: 1px solid #000;
-      }
-    }
-    h4 {
-      width: 20%;
-      padding-left: 10px;
-    }
-    ul {
-      list-style-type: none;
-      padding-inline-start: 0;
-    }
-    li {
-      display: flex;
-    }
-  `;
 
   const getData = (sortedBy) =>
     fetch(`${dataUrl}${sortedBy ? sortedBy + order : ""}`).then((res) =>
@@ -59,7 +59,7 @@ const Filter = () => {
   useEffect(() => {
     setFilteredData(data);
     getAllTags();
-  }, [data]);
+  }, [data, test]);
 
   const filterBySort = (sort) => {
     setSortedBy(sort);
@@ -115,9 +115,10 @@ const Filter = () => {
     };
     const newData = data.sort(orderData);
 
-    console.log(filteredData)
+    console.log(filteredData);
 
     setFilteredData(newData);
+    setTest('test')
   };
 
   return (
@@ -194,6 +195,7 @@ const Filter = () => {
         <h4>Förnamn</h4>
         <h4>Efternamn</h4>
         <h4>Ålder</h4>
+        <h4>Adress</h4>
         <h4>tags</h4>
         <h4>Status</h4>
       </div>
@@ -206,6 +208,7 @@ const Filter = () => {
                   <h4>{person.firstname}</h4>
                   <h4>{person.surname}</h4>
                   <h4>{person.age}</h4>
+                  <h4>{person.address}</h4>
                   <h4>
                     {person.tags &&
                       person.tags.map((tag) => {
