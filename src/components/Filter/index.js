@@ -56,15 +56,27 @@ const Filter = () => {
       getData(sortedBy).then((value) => setData(value));
     } else {
       sortByZipCode(order);
-      console.log(filteredData)
     }
   }, [sortedBy, order]);
 
   useEffect(() => {
-    setZipNumb(false);
     setFilteredData(data);
     getAllTags();
   }, [data]);
+
+  const getAllTags = () => {
+    setZipNumb(false);
+    let dataTags = [];
+    if (data) {
+      data.map((pers) => {
+        dataTags.push(pers.tags[0]);
+      });
+
+      const allTags = [...new Set(dataTags)];
+
+      setTags(allTags);
+    }
+  };
 
   const filterBySort = (sort) => {
     setZipNumb(false);
@@ -85,20 +97,6 @@ const Filter = () => {
     }
   };
 
-  const getAllTags = () => {
-    setZipNumb(false);
-    let dataTags = [];
-    if (data) {
-      data.map((pers) => {
-        dataTags.push(pers.tags[0]);
-      });
-
-      const allTags = [...new Set(dataTags)];
-
-      setTags(allTags);
-    }
-  };
-
   const filterByTags = (tag) => {
     setZipNumb(false);
     let activeData = data.map((pers) => {
@@ -116,14 +114,13 @@ const Filter = () => {
 
   const sortByZipCode = (order) => {
     setZipNumb(true);
+    setSortedBy(null);
 
     const orderData = (a, b) => {
       const adressA = a.address.split(",");
       const adressB = b.address.split(",");
-
       const numb = order === "desc" ? -1 : 1;
 
-      console.log(numb)
       return (adressA[adressA.length - 1] - adressB[adressA.length - 1]) * numb;
     };
 
