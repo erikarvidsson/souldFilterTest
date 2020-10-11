@@ -51,10 +51,13 @@ const Filter = () => {
 
   // run get data from api
   useEffect(() => {
-    getData(sortedBy).then((data) => setData(data));
+    getData(sortedBy).then((value) => setData(value));
+  }, [sortedBy]);
+
+  useEffect(() => {
     setFilteredData(data);
     getAllTags();
-  }, [sortedBy]);
+  }, [data]);
 
   const filterBySort = (sort) => {
     setSortedBy(sort);
@@ -65,28 +68,29 @@ const Filter = () => {
     // value to boolean
     value = value === "true" ? true : value === "false" ? false : "All";
     // filter data by status
-    let activeData = data.filter((obj) => {
-      return obj.isActive === value;
-    });
-
-    setFilteredData(activeData);
+    if(value === true || value === false) {
+      let activeData = data.filter((obj) => {
+        return obj.isActive === value;
+      });
+  
+      setFilteredData(activeData);
+    }
   };
 
   const getAllTags = () => {
-    let tags = [];
+    let dataTags = [];
     if (data) {
       data.map((pers) => {
-        tags.push(pers.tags[0]);
+        dataTags.push(pers.tags[0]);
       });
 
-      const allTags = [...new Set(tags)];
+      const allTags = [...new Set(dataTags)];
 
       setTags(allTags);
     }
   };
 
   const filterByTags = (tag) => {
-    console.log("tag");
     let activeData = data.map((pers) => {
       if (pers.tags.includes(tag)) {
         return pers;
@@ -96,12 +100,11 @@ const Filter = () => {
     activeData = activeData.filter(function (el) {
       return el != null;
     });
-    console.log(activeData);
 
     setFilteredData(activeData);
-
-    console.log(filteredData);
   };
+
+  useEffect(() => {}, [sortedBy]);
 
   return (
     <ListItems>
@@ -126,10 +129,11 @@ const Filter = () => {
               filterByTags(e.target.value);
             }}
           >
-            <option value="" disabled selected hidden>Choose tag</option>
+            <option value="" disabled selected hidden>
+              Choose tag
+            </option>
             {tags &&
               tags.map((tag) => {
-                console.log(tags);
                 return (
                   <>
                     <option value={tag}>{tag}</option>
@@ -145,6 +149,9 @@ const Filter = () => {
               filterByStatus(e.target.value);
             }}
           >
+            <option value="" disabled selected hidden>
+              Choose
+            </option>
             <option value={"all"}>All</option>
             <option value={true}>Active</option>
             <option value={false}>Not Active</option>
