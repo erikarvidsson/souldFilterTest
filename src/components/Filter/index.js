@@ -49,9 +49,11 @@ const Filter = () => {
   const getData = (sortedBy) =>
     fetch(`${dataUrl}${sortedBy ? sortedBy : ""}`).then((res) => res.json());
 
+  // run get data from api
   useEffect(() => {
     getData(sortedBy).then((data) => setData(data));
-    console.log('hej')
+    setFilteredData(data);
+    getAllTags();
   }, [sortedBy]);
 
   const filterBySort = (sort) => {
@@ -59,9 +61,7 @@ const Filter = () => {
   };
 
   const filterByStatus = (value) => {
-    // reset data
-
-
+    setFilteredData(data);
     // value to boolean
     value = value === "true" ? true : value === "false" ? false : "All";
     // filter data by status
@@ -69,7 +69,20 @@ const Filter = () => {
       return obj.isActive === value;
     });
 
-    setData(activeData);
+    setFilteredData(activeData);
+  };
+
+  const getAllTags = () => {
+    let tags = [];
+    if (data) {
+      data.map((pers) => {
+        tags.push(pers.tags[0]);
+      });
+
+      const allTags = [...new Set(tags)];
+
+      setTags(allTags);
+    }
   };
 
   const filterByTags = (tag) => {
@@ -85,7 +98,9 @@ const Filter = () => {
     });
     console.log(activeData);
 
-    setData(activeData);
+    setFilteredData(activeData);
+
+    console.log(filteredData);
   };
 
   return (
@@ -104,7 +119,25 @@ const Filter = () => {
         <h4 onClick={() => filterBySort(`?order_by=age&order=${order}`)}>
           Ålder
         </h4>
-        <h4 onClick={() => filterByTags("tempor")}>tags</h4>
+        <h4>
+          Tags
+          <select
+            onChange={(e) => {
+              filterByTags(e.target.value);
+            }}
+          >
+            <option value="" disabled selected hidden>Choose tag</option>
+            {tags &&
+              tags.map((tag) => {
+                console.log(tags);
+                return (
+                  <>
+                    <option value={tag}>{tag}</option>
+                  </>
+                );
+              })}
+          </select>
+        </h4>
         <h4>
           Status{" "}
           <select
@@ -126,8 +159,8 @@ const Filter = () => {
         <h4>Status</h4>
       </div>
       <ul>
-        {data &&
-          data.map((person) => {
+        {filteredData &&
+          filteredData.map((person) => {
             return (
               <>
                 <li>
