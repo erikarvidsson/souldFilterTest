@@ -47,12 +47,12 @@ const Filter = () => {
   `;
 
   const getData = (sortedBy) =>
-    fetch(`${dataUrl}${sortedBy ? sortedBy : ""}`).then((res) => res.json());
+    fetch(`${dataUrl}${sortedBy ? sortedBy+order : ""}`).then((res) => res.json());
 
   // run get data from api
   useEffect(() => {
     getData(sortedBy).then((value) => setData(value));
-  }, [sortedBy]);
+  }, [sortedBy, order]);
 
   useEffect(() => {
     setFilteredData(data);
@@ -68,11 +68,11 @@ const Filter = () => {
     // value to boolean
     value = value === "true" ? true : value === "false" ? false : "All";
     // filter data by status
-    if(value === true || value === false) {
+    if (value === true || value === false) {
       let activeData = data.filter((obj) => {
         return obj.isActive === value;
       });
-  
+
       setFilteredData(activeData);
     }
   };
@@ -104,24 +104,39 @@ const Filter = () => {
     setFilteredData(activeData);
   };
 
-  useEffect(() => {}, [sortedBy]);
-
   return (
     <ListItems>
       <div className="filter">
         <h4>Sotera efter:</h4>
         <h4
           className="active"
-          onClick={() => filterBySort(`?order_by=firstname&order=${order}`)}
+          onClick={() => filterBySort(`?order_by=firstname&order=`)}
         >
           Förnamn
         </h4>
-        <h4 onClick={() => filterBySort(`?order_by=surname&order=${order}`)}>
+        <h4 onClick={() => filterBySort(`?order_by=surname&order=`)}>
           Efternamn
         </h4>
-        <h4 onClick={() => filterBySort(`?order_by=age&order=${order}`)}>
-          Ålder
+        <h4 onClick={() => filterBySort(`?order_by=age&order=`)}>Ålder</h4>
+        <h4>
+          Order{" "}
+          <select
+            onChange={(e) => {
+              setOrder(e.target.value);
+
+              console.log(e.target.value);
+            }}
+          >
+            <option value="" disabled selected hidden>
+              Choose order
+            </option>
+            <option value={"asc"}>Asc</option>
+            <option value={"desc"}>Desc</option>
+          </select>
         </h4>
+      </div>
+      <div className="filter">
+        <h4>Filtrera efter:</h4>
         <h4>
           Tags
           <select
@@ -150,7 +165,7 @@ const Filter = () => {
             }}
           >
             <option value="" disabled selected hidden>
-              Choose
+              Choose status
             </option>
             <option value={"all"}>All</option>
             <option value={true}>Active</option>
