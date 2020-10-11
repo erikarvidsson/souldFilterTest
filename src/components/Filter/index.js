@@ -41,9 +41,9 @@ const Filter = () => {
   const [data, setData] = useState();
   const [filteredData, setFilteredData] = useState();
   const [tags, setTags] = useState();
-  const [test, setTest] = useState();
   const [sortedBy, setSortedBy] = useState();
   const [order, setOrder] = useState("asc");
+  const [zipNumb, setZipNumb] = useState();
   const dataUrl = "https://api.dev.sould.se/";
 
   const getData = (sortedBy) =>
@@ -51,25 +51,31 @@ const Filter = () => {
       res.json()
     );
 
-  // run get data from api
   useEffect(() => {
-    getData(sortedBy).then((value) => setData(value));
+    if (!zipNumb) {
+      getData(sortedBy).then((value) => setData(value));
+    } else {
+      sortByZipCode(order);
+      console.log(filteredData)
+    }
   }, [sortedBy, order]);
 
   useEffect(() => {
+    setZipNumb(false);
     setFilteredData(data);
     getAllTags();
-  }, [data, test]);
+  }, [data]);
 
   const filterBySort = (sort) => {
+    setZipNumb(false);
     setSortedBy(sort);
   };
 
   const filterByStatus = (value) => {
+    setZipNumb(false);
     setFilteredData(data);
-    // value to boolean
     value = value === "true" ? true : value === "false" ? false : "All";
-    // filter data by status
+
     if (value === true || value === false) {
       let activeData = data.filter((obj) => {
         return obj.isActive === value;
@@ -80,6 +86,7 @@ const Filter = () => {
   };
 
   const getAllTags = () => {
+    setZipNumb(false);
     let dataTags = [];
     if (data) {
       data.map((pers) => {
@@ -93,6 +100,7 @@ const Filter = () => {
   };
 
   const filterByTags = (tag) => {
+    setZipNumb(false);
     let activeData = data.map((pers) => {
       if (pers.tags.includes(tag)) {
         return pers;
@@ -106,19 +114,20 @@ const Filter = () => {
     setFilteredData(activeData);
   };
 
-  const sortByZipCode = () => {
+  const sortByZipCode = (order) => {
+    setZipNumb(true);
+
     const orderData = (a, b) => {
       const adressA = a.address.split(",");
       const adressB = b.address.split(",");
 
-      return adressA[adressA.length - 1] - adressB[adressA.length - 1];
+      const numb = order === "desc" ? -1 : 1;
+
+      console.log(numb)
+      return (adressA[adressA.length - 1] - adressB[adressA.length - 1]) * numb;
     };
-    const newData = data.sort(orderData);
 
-    console.log(filteredData);
-
-    setFilteredData(newData);
-    setTest('test')
+    setFilteredData([...data.sort(orderData)]);
   };
 
   return (
@@ -135,14 +144,13 @@ const Filter = () => {
           Efternamn
         </h4>
         <h4 onClick={() => filterBySort(`?order_by=age&order=`)}>Ålder</h4>
-        <h4 onClick={() => sortByZipCode()}>Postnummer</h4>
+
+        <h4 onClick={() => sortByZipCode(order)}>Postnummer</h4>
         <h4>
           Order{" "}
           <select
             onChange={(e) => {
               setOrder(e.target.value);
-
-              console.log(e.target.value);
             }}
           >
             <option value="" disabled selected hidden>
@@ -156,7 +164,7 @@ const Filter = () => {
       <div className="filter">
         <h4>Filtrera efter:</h4>
         <h4>
-          Tags
+          Taggar
           <select
             onChange={(e) => {
               filterByTags(e.target.value);
@@ -196,7 +204,7 @@ const Filter = () => {
         <h4>Efternamn</h4>
         <h4>Ålder</h4>
         <h4>Adress</h4>
-        <h4>tags</h4>
+        <h4>Taggar</h4>
         <h4>Status</h4>
       </div>
       <ul>
