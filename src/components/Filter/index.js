@@ -47,7 +47,9 @@ const Filter = () => {
   `;
 
   const getData = (sortedBy) =>
-    fetch(`${dataUrl}${sortedBy ? sortedBy+order : ""}`).then((res) => res.json());
+    fetch(`${dataUrl}${sortedBy ? sortedBy + order : ""}`).then((res) =>
+      res.json()
+    );
 
   // run get data from api
   useEffect(() => {
@@ -97,11 +99,25 @@ const Filter = () => {
       }
     });
 
-    activeData = activeData.filter(function (el) {
-      return el != null;
+    activeData = activeData.filter(function (notEmpty) {
+      return notEmpty != null;
     });
 
     setFilteredData(activeData);
+  };
+
+  const sortByZipCode = () => {
+    const orderData = (a, b) => {
+      const adressA = a.address.split(",");
+      const adressB = b.address.split(",");
+
+      return adressA[adressA.length - 1] - adressB[adressA.length - 1];
+    };
+    const newData = data.sort(orderData);
+
+    console.log(filteredData)
+
+    setFilteredData(newData);
   };
 
   return (
@@ -118,6 +134,7 @@ const Filter = () => {
           Efternamn
         </h4>
         <h4 onClick={() => filterBySort(`?order_by=age&order=`)}>Ålder</h4>
+        <h4 onClick={() => sortByZipCode()}>Postnummer</h4>
         <h4>
           Order{" "}
           <select
