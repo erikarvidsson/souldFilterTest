@@ -6,14 +6,14 @@ const ListItems = styled.div`
     display: flex;
 
     h4:nth-child(1) {
-      border: 0px solid #114;
+      border: none;
     }
     h4 {
       border: 1px solid #119;
       border-radius: 20px;
-
+      cursor: pointer;
       &.active {
-        border: 2px solid #114;
+        border: 3px solid #114;
       }
     }
   }
@@ -24,9 +24,34 @@ const ListItems = styled.div`
       border: 1px solid #000;
     }
   }
+  .menu {
+    border: 1px solid #119;
+    &:hover .items {
+      display: block;
+    }
+    h4 {
+      width: 150px;
+      &:after {
+        content: " ▾";
+      }
+    }
+    .items {
+      display: none;
+
+      h4 {
+        width: fit-content;
+        border: none;
+        &:after {
+          content: "";
+        }
+      }
+    }
+  }
+
   h4 {
     width: 15%;
     padding-left: 10px;
+    height: max-content;
   }
   ul {
     list-style-type: none;
@@ -40,7 +65,7 @@ const ListItems = styled.div`
 const Filter = () => {
   const [data, setData] = useState();
   const [filteredData, setFilteredData] = useState();
-  const [tags, setTags] = useState();
+  const [tags] = useState(["tempor", "consequat", "adipisicing"]);
   const [sortedBy, setSortedBy] = useState();
   const [order, setOrder] = useState("asc");
   const [zipNumb, setZipNumb] = useState();
@@ -61,22 +86,22 @@ const Filter = () => {
 
   useEffect(() => {
     setFilteredData(data);
-    getAllTags();
+    // getAllTags();
   }, [data]);
 
-  const getAllTags = () => {
-    setZipNumb(false);
-    let dataTags = [];
-    if (data) {
-      data.map((pers) => {
-        dataTags.push(pers.tags[0]);
-      });
+  // const getAllTags = () => {
+  //   setZipNumb(false);
+  //   let dataTags = [];
+  //   if (data) {
+  //     data.map((pers) => {
+  //       dataTags.push(pers.tags[0]);
+  //     });
 
-      const allTags = [...new Set(dataTags)];
+  //     const allTags = [...new Set(dataTags)];
 
-      setTags(allTags);
-    }
-  };
+  //     setTags(allTags);
+  //   }
+  // };
 
   const filterBySort = (sort) => {
     setZipNumb(false);
@@ -131,10 +156,7 @@ const Filter = () => {
     <ListItems>
       <div className="filter">
         <h4>Sotera efter:</h4>
-        <h4
-          className="active"
-          onClick={() => filterBySort(`?order_by=firstname&order=`)}
-        >
+        <h4 onClick={() => filterBySort(`?order_by=firstname&order=`)}>
           Förnamn
         </h4>
         <h4 onClick={() => filterBySort(`?order_by=surname&order=`)}>
@@ -160,41 +182,40 @@ const Filter = () => {
       </div>
       <div className="filter">
         <h4>Filtrera efter:</h4>
-        <h4>
-          Taggar
-          <select
-            onChange={(e) => {
-              filterByTags(e.target.value);
-            }}
-          >
-            <option value="" disabled selected hidden>
-              Choose tag
-            </option>
+
+        <div className="menu">
+          <h4>Select tag</h4>
+          <div className="items">
             {tags &&
               tags.map((tag) => {
                 return (
                   <>
-                    <option value={tag}>{tag}</option>
+                    <h4 onClick={(e) => filterByTags(e.target.innerHTML)}>
+                      {tag}
+                    </h4>
                   </>
                 );
               })}
-          </select>
-        </h4>
-        <h4>
-          Status{" "}
-          <select
-            onChange={(e) => {
-              filterByStatus(e.target.value);
-            }}
-          >
-            <option value="" disabled selected hidden>
-              Choose status
-            </option>
-            <option value={"all"}>All</option>
-            <option value={true}>Active</option>
-            <option value={false}>Not Active</option>
-          </select>
-        </h4>
+          </div>
+        </div>
+
+        <div className="menu">
+          <h4>Select status</h4>
+          <div className="items">
+            <h4
+              onClick={(e) => filterByStatus(e.target.innerHTML)}
+              value={"all"}
+            >
+              All
+            </h4>
+            <h4 onClick={(e) => filterByStatus("true")} value={true}>
+              Active
+            </h4>
+            <h4 onClick={(e) => filterByStatus("false")} value={false}>
+              Not Active
+            </h4>
+          </div>
+        </div>
       </div>
       <div className="listHeader">
         <h4>Förnamn</h4>
